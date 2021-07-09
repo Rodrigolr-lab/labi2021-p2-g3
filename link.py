@@ -12,7 +12,9 @@ config = {
   "/html": { "tools.staticdir.on": True,
              "tools.staticdir.dir": "html" },
   "/img": { "tools.staticdir.on": True,
-              "tools.staticdir.dir": "img" }
+              "tools.staticdir.dir": "img" },
+  "/songs": { "tools.staticdir.on": True,
+              "tools.staticdir.dir": "songs" }
 }
 
 class Root(object):
@@ -31,7 +33,7 @@ class Root(object):
     
     @cherrypy.expose
     def about(self):
-        return open("about.html").read() 
+        return open("about.html").read()
 
 if __name__ == "__main__":
     cherrypy.quickstart(Root(), "/", config)
