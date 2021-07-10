@@ -55,18 +55,37 @@ window.addEventListener('DOMContentLoaded', event => {
 
 //my JS
 
-function addRow(tableID) {
-    // Get a reference to the table
-    let tableRef = document.getElementById(tableID);
-    console.log(tableID);
-  
-    // Insert a row at the end of the table
-    let newRow = tableRef.insertRow(-1);
-  
-    // Insert a cell in the row at index 0
-    let newCell = newRow.insertCell(0);
-  
-    // Append a text node to the cell
-    let newText = document.createTextNode('New bottom row');
-    newCell.appendChild(newText);
-  }
+function votosup (Elemento){
+    Elemento = Elemento.toString(2)
+    var x = document.getElementById( Elemento ).innerText;
+    x = parseFloat(x);
+    //console.log(x);
+    x++;
+    document.getElementById( Elemento ).innerHTML=x;
+}
+
+function votosdown (Elemento){
+
+    var x = document.getElementById( Elemento ).innerText;
+    x = parseFloat(x);
+    //console.log(x);
+    if(x>0)
+        x--;
+    document.getElementById( Elemento ).innerHTML=x;
+}
+
+function makerow(){
+    var inst=document.getElementById("Instrument").value;
+    var exc=document.getElementById("Excerto").value;
+
+    var table=document.getElementsByTagName('table')[0];
+
+    var newRow = table.insertRow(1);
+
+    var cell1 = newRow.insertCell(0);
+    var cell2 = newRow.insertCell(1);
+    var cell3 = newRow.insertCell(2);
+
+    cell1.innerHTML= inst;
+    cell2.innerHTML= exc;
+};
