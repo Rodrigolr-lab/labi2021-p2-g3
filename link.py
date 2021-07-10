@@ -18,9 +18,20 @@ config = {
 }
 
 class Root(object):
-    
+
     @cherrypy.expose
     def index(self):
+        return open("index.html").read()
+
+    @cherrypy.expose
+    def login(self, username=None):
+        if(username==""):
+            return open("index.html").read()
+        else:
+            return open("music.html").read()
+            
+    @cherrypy.expose
+    def music(self):
         return open("music.html").read()
     
     @cherrypy.expose
@@ -34,6 +45,8 @@ class Root(object):
     @cherrypy.expose
     def about(self):
         return open("about.html").read()
+
+
 
 if __name__ == "__main__":
     cherrypy.quickstart(Root(), "/", config)
