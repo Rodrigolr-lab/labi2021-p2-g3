@@ -48,23 +48,38 @@
                     <table class="table text-center" id="excertos_table">
                         <tr id="head-excerto">
                             <th>instrument</th>
-                            <th>Excerto</th>
+                            <th>File name</th>
                             <th></th>
                         </tr>
                         <tr id="row-drums">
                             <td>drums</td>
-                            <td>excerto1</td>
+                            <td>drums.wav</td>
                             <td><input type="submit" value="Play" class="btn btn-secondary btn-lg text-uppercase"/></td>
                         </tr>
                         <tr id="row-violine">
                             <td>Violine</td>
-                            <td>excerto2</td>
+                            <td>violine.wav</td>
                             <td><input type="submit" value="Play" class="btn btn-secondary btn-lg text-uppercase"/></td>
                         </tr>
                     </table>
                     <div class="text-center">
                         <br/><br/><br/>
-                        <input type="submit" value="Add" onclick="addRow(excertos_table);"class="btn btn-outline-primary btn-xl text-uppercase"/>
+                        <table class="text-center">
+                            <tr>
+                                <td>Instrument:</td>
+                                <td>Name</td>
+                                <td>File:</td>
+                            </tr>
+                            <tr>
+                                <td> <input value="" id="Instrument"/> </td>
+                                <td> <input value="" id="Excerto"/> </td>
+                                <td><input type="file" id="avatar" name="avatar" accept="songs/wav"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <br/><br/><br/>
+                        <input type="submit" value="Add" onclick="makerow();"class="btn btn-outline-primary btn-xl text-uppercase"/>
                     </div>
                 </div>
             </div>

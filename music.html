@@ -64,21 +64,27 @@
                             <th></th>
                         </tr>
                         <tr id="row-marsh">
-                            <td>1</td>
+                            <td id="liked1">0</td>
                             <td>Marshmello</td>
                             <td>Friends</td>
-                            <td><input type="submit" value="Play" id="play" class="btn btn-secondary btn-lg text-uppercase"/></td>
-                            <td><input type="submit" value="ᐁ" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/> 
-                                <input type="submit" value="ᐃ" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/></td>
+                            <td>
+                                <form action="music" method="POST">
+                                <input type="submit" value="Play" class="btn btn-secondary btn-lg text-uppercase"/>
+                                </form>
+                            </td>
+                            
+                            <td><input type="submit" value="ᐁ" onclick="votosdown('liked1')" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/> 
+                                <input type="submit" value="ᐃ" onclick="votosup('liked1')" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/></td>
                         </tr>
                         <tr id="row-outro">
-                            <td>2</td>
+                            <td id="liked2">0</td>
                             <td>Outro</td>
                             <td>Outra</td>
                             <td><input type="submit" value="Play" id="play" class="btn btn-secondary btn-lg text-uppercase"/></td>
-                            <td><input type="submit" value="ᐁ" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/> 
-                                <input type="submit" value="ᐃ" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/></td>
+                            <td><input type="submit" value="ᐁ" onclick="votosdown('liked2')" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/> 
+                                <input type="submit" value="ᐃ" onclick="votosup('liked2')" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/></td>
                         </tr>
+                        
                     </table>
                 </div>
             </div>
