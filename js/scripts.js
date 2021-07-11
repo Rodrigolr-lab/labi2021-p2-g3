@@ -55,25 +55,6 @@ window.addEventListener('DOMContentLoaded', event => {
 
 //my JS
 
-function votosup (Elemento){
-    Elemento = Elemento.toString(2)
-    var x = document.getElementById( Elemento ).innerText;
-    x = parseFloat(x);
-    //console.log(x);
-    x++;
-    document.getElementById( Elemento ).innerHTML=x;
-}
-
-function votosdown (Elemento){
-
-    var x = document.getElementById( Elemento ).innerText;
-    x = parseFloat(x);
-    //console.log(x);
-    if(x>0)
-        x--;
-    document.getElementById( Elemento ).innerHTML=x;
-}
-
 function makerow(){//creates a new Row
     var inst=document.getElementById("Instrument").value;
     var exc=document.getElementById("Excerto").value;
@@ -99,7 +80,82 @@ function makerow(){//creates a new Row
     forms.appendChild(btn);
     cell3.appendChild(forms);
 }
+//produz som ao clicar em play botao
 function play(song){
     var audio = new Audio(song);
     audio.play();
 }
+
+
+
+//--------------------------------1PAG------------------------------
+//chamar DATABASE
+function chamar_api() {
+    var request = new XMLHttpRequest();
+    //pede request metodo get
+    request.open("GET", "list?type=music_table", true);
+    //verifica mudancas de estado
+    request.onreadystatechange = function () {
+        // In local files, status is 0 upon success in Mozilla Firefox
+    //verifica estado done
+    if(request.readyState === XMLHttpRequest.DONE) {
+        var status = request.status;
+        //verifica estado done
+        if (status === 0 || (status >= 200 && status < 400)) {
+          // The request has been completed successfully
+          //jsoon para js
+          resposta = JSON.parse(request.responseText);
+          make(resposta);
+        }
+        else{
+            console.log("ERROR");
+        }
+      }
+    }
+    request.send(null);
+  }
+
+
+//tabela de music --------------------------------1PAG------------------------------
+//criacao da tabela musicas 
+function make(json_dados) {
+    html = `<tr>
+                <th>#</th>
+                <th>Artist</th>
+                <th>Music</th>
+                <th></th>
+                <th></th>
+            </tr>`;
+    for (var i = 0; i < json_dados.length; i++) {
+      dados = json_dados[i];
+      html = html + `<tr>
+                        <td id="`+dados.id+`">`+ dados.votes + `</td>
+                        <td>`+ dados.artist + `</td>
+                        <td>` + dados.music  + `</td>
+                        <td>
+                            <input type="submit" value="Play" onclick="play('musica/`+dados.music+`.wav')" class="btn btn-secondary btn-lg text-uppercase"/>
+                        </td>
+                        <td>
+                            <input type="submit" value="ᐁ" name="`+ dados.votes + `"onclick="votos('`+dados.id+`', -1)" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/> 
+                            <input type="submit" value="ᐃ" name="`+ dados.votes + `"onclick="votos('`+dados.id+`', 1)" class="btn btn-secondary btn-lg text-uppercase rounded-circle"/>
+                       </td>
+                    </tr>`;
+    }
+    document.getElementById("table_votes").innerHTML = html;
+  }
+
+//votar para cima ou para baixo
+function votos (Elemento, cho){
+    var request = new XMLHttpRequest();
+    cho = parseFloat(cho);
+    request.open("PUT", "vote?id="+Elemento+"&votes="+cho, true);
+    //Send the proper header information along with the request
+    request.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            document.getElementById(Elemento).innerHTML = request.responseText;
+        }
+    }
+    request.send(null);
+}
+
+chamar_api()

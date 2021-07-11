@@ -9799,6 +9799,11 @@ textarea.form-control-lg {
     margin-right: 3rem !important;
     margin-left: 3rem !important;
   }
+  
+  .mx-xl-6 {
+    margin-right: 12rem !important;
+    margin-left: 12rem !important;
+  }
 
   .mx-xl-auto {
     margin-right: auto !important;
@@ -10004,6 +10009,11 @@ textarea.form-control-lg {
   .px-xl-5 {
     padding-right: 3rem !important;
     padding-left: 3rem !important;
+  }
+
+  .px-xl-6 {
+    padding-right: 14rem !important;
+    padding-left: 14rem !important;
   }
 
   .py-xl-0 {
@@ -10513,6 +10523,10 @@ textarea.form-control-lg {
 
   .mt-xxl-5 {
     margin-top: 3rem !important;
+  }
+
+  .mt-xxl-6 {
+    margin-top: 14rem !important;
   }
 
   .mt-xxl-auto {

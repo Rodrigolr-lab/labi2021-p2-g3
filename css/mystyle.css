@@ -8,10 +8,12 @@
     border-width: 0;
 }
 
-  
-.mine{
-    padding-right: 25% !important;
-    padding-left: 100px !important;
+.title-prymary {
+    padding-top: 0.3125rem;
+    padding-bottom: 0.3125rem;
+    margin-right: 1rem;
+    font-size: 5rem;
+    text-decoration: overline;
   }
 
 /*TableMixer*/
