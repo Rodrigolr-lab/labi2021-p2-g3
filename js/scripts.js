@@ -55,33 +55,40 @@ window.addEventListener('DOMContentLoaded', event => {
 
 //my JS
 
+function path(file_name){
+    const path = require(file_name);
+    return path;
+}
+
+
 function makerow(){//creates a new Row
+    //val intrument
     var inst=document.getElementById("Instrument").value;
-    var exc=document.getElementById("Excerto").value;
+    var path_file = document.getElementById("file").value;//.files[0].name
+    console.log(path_file);
     var table=document.getElementsByTagName('table')[0];
     //adiciona uma nova row 
     var newRow = table.insertRow(1);
     //adiciona uma nova cellss
     var cell1 = newRow.insertCell(0);
     var cell2 = newRow.insertCell(1);
-    var cell3 = newRow.insertCell(2);
-    //cria uma tag form
-    var forms = document.createElement("form");
-    forms.action = "music";
-    forms.method = "POST";
     //cria uma tag input
     var btn = document.createElement("input");
     btn.value = "Play";
     btn.type = "submit";
     btn.className="btn btn-secondary btn-lg text-uppercase";
+    btn.onclick=function(){
+        console.log(path_file);
+        path_file = path_file.replace("\\", "/");
+        console.log(path_file);
+        play(path_file);};
     //conexao dos tags
     cell1.innerHTML= inst;
-    cell2.innerHTML= exc;
-    forms.appendChild(btn);
-    cell3.appendChild(forms);
+    cell2.appendChild(btn);
 }
 //produz som ao clicar em play botao
 function play(song){
+    console.log(song);
     var audio = new Audio(song);
     audio.play();
 }
@@ -192,17 +199,14 @@ function chamar_api_excertos() {
 //criacao da tabela musicas 
 function make_excertos(json_dados) {
     html = `<tr>
-                <th>#</th>
                 <th>instrument</th>
-                <th>File name</th>
                 <th></th>
             </tr>`;
     for (var i = 0; i < json_dados.length; i++) {
       dados = json_dados[i];
       html = html + `<tr>
-                        <td>`+dados.some +`</td>
-                        <td>`+dados.some +`</td>
-                        <td><input type="submit" value="Play" onclick="play('musica/`+dados.some+`.wav')" class="btn btn-secondary btn-lg text-uppercase"/></td>
+                        <td>`+dados.instrument +`</td>
+                        <td><input type="submit" value="Play" onclick="play('`+dados.name_file+`')" class="btn btn-secondary btn-lg text-uppercase"/></td>
                     </tr>`;
     }
     document.getElementById("table_excertos").innerHTML = html;

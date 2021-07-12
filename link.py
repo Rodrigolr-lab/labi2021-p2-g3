@@ -79,7 +79,7 @@ class Root(object):
             return (json.dumps(dict, indent=4))
         #entra em se for excertos.html
         elif(type == "music_excertos"):
-            result = dataBase.execute("SELECT * FROM music_table")
+            result = dataBase.execute("SELECT * FROM excertos_table")
             rows = result.fetchall()
             dict = []
             i = 0
@@ -87,10 +87,8 @@ class Root(object):
             for row in rows:
                 dict.append({})
                 dict[i]["id"] = row[0]
-                dict[i]["music"] = row[1]
-                dict[i]["artist"] = row[2]
-                dict[i]["votes"] = row[3]
-                dict[i]["persons"] = row[4]
+                dict[i]["instrument"] = row[1]
+                dict[i]["name_file"] = row[2]
                 i = i + 1
             return (json.dumps(dict, indent=4))
 
@@ -102,7 +100,10 @@ class Root(object):
         if(int(votes)==1 or int(votes)==-1):
             dataBase = sqlite3.connect('database.db')
             row = dataBase.execute("SELECT votes FROM music_table WHERE id="+id)
+            people = dataBase.execute("SELECT people FROM music_table WHERE id="+id)
+            result1 = people.fetchone()
             result = row.fetchone()
+            result1 = result1[0] + 1
             result= result[0]
             if(int(votes)==1):
                 result = result + int(votes)
@@ -112,7 +113,8 @@ class Root(object):
                 dataBase.execute("UPDATE music_table SET votes="+str(result)+" WHERE id="+id)
             else:
                 print("ERROO")
-                
+            
+            dataBase.execute("UPDATE music_table SET people="+str(result1)+" WHERE id="+id)
             dataBase.commit()
             dataBase.close()
         return result
