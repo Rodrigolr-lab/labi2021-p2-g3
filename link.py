@@ -182,46 +182,32 @@ class Root(object):
         wf7 = wave.open('musica/' + wf7, 'rb')
 
        
-        with wave.open("out4.wav", "wb") as stream:
+        wfs = [wf1, wf2, wf3, wf4, wf5, wf6, wf7]
+
+        with wave.open("musica/out5.wav", "wb") as stream:
             stream.setparams((1, 2, 22050, 0, "NONE", "not compressed"))
 
-            data1 = wf1.readframes(frame_count)
-            data2 = wf2.readframes(frame_count)
-            data3 = wf3.readframes(frame_count)
-            data4 = wf4.readframes(frame_count)
-            data5 = wf5.readframes(frame_count)
-            data6 = wf6.readframes(frame_count)
-            data7 = wf7.readframes(frame_count)
+            newdata = None
 
+            for wf in wfs:
+                data = wf.readframes(frame_count)
+                decodeddata = numpy.fromstring(data, numpy.int16)
+                if(newdata is None):
+                    newdata = decodeddata.astype(numpy.int16)
+                else :
+                    newdata = newdata + decodeddata.astype(numpy.int16)
 
-            decodeddata1 = numpy.fromstring(data1, numpy.int16)
-            decodeddata2 = numpy.fromstring(data2, numpy.int16)
-            decodeddata3 = numpy.fromstring(data3, numpy.int16)
-            decodeddata4 = numpy.fromstring(data4, numpy.int16)
-            decodeddata5 = numpy.fromstring(data5, numpy.int16)
-            decodeddata6 = numpy.fromstring(data6, numpy.int16)
-            decodeddata7 = numpy.fromstring(data7, numpy.int16)
+            while len(newdata) > 0:
+                stream.writeframes(newdata)
 
-            while len(decodeddata1) > 0:
-                newdata = (decodeddata1 + decodeddata2 + decodeddata3 +decodeddata4 +decodeddata5 +decodeddata6 +decodeddata7).astype(numpy.int16)
-                stream.writeframes(newdata )
-
-                data1 = wf1.readframes(frame_count)
-                data2 = wf2.readframes(frame_count)
-                data3 = wf3.readframes(frame_count)
-                data4 = wf4.readframes(frame_count)
-                data5 = wf5.readframes(frame_count)
-                data6 = wf6.readframes(frame_count)
-                data7 = wf7.readframes(frame_count)
-
-
-                decodeddata1 = numpy.fromstring(data1, numpy.int16)
-                decodeddata2 = numpy.fromstring(data2, numpy.int16)
-                decodeddata3 = numpy.fromstring(data3, numpy.int16)
-                decodeddata4 = numpy.fromstring(data4, numpy.int16)
-                decodeddata5 = numpy.fromstring(data5, numpy.int16)
-                decodeddata6 = numpy.fromstring(data6, numpy.int16)
-                decodeddata7 = numpy.fromstring(data7, numpy.int16)
+                newdata = None
+                for wf in wfs:
+                    data = wf.readframes(frame_count)
+                    decodeddata = numpy.fromstring(data, numpy.int16)
+                    if(newdata is None):
+                        newdata = decodeddata.astype(numpy.int16)
+                    else :
+                        newdata = newdata + decodeddata.astype(numpy.int16)
         return newdata.tostring()
 
 if __name__ == "__main__":
