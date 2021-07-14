@@ -3,8 +3,11 @@ import os.path
 import sqlite3
 import json
 import wave
-import numpy as np
+import numpy
 import pyaudio
+from struct import pack
+from math import sin, pi
+
 #diretorio do root
 baseDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -124,15 +127,33 @@ class Root(object):
             dataBase.close()
         return result
 
+        
+    @cherrypy.expose
+    def upload(self, myFile):
+        #retira ".wav" do file
+        file = myFile.filename.replace(".wav","")
+        fo = open(os.getcwd()+ '/musica/' + myFile.filename, 'wb')
+        while True:
+            data = myFile.file.read(8192)
+            if not data:
+                break
+            fo.write(data)
+        dataBase = sqlite3.connect('database.db')
+        #adciona nova row da tabela excertos
+        dataBase.execute("INSERT INTO excertos_table(instrument, name_file) VALUES(?, ?);", (file, myFile.filename,))
+        dataBase.commit()
+        fo.close()
+
     #creates and adds file to database
     @cherrypy.expose
     def upload_pauta(self, json_dados):
-        myFile = self.criar_music(json_dados)
+        json_dados = json.loads(json_dados)
+        myFile = self.criar_music(json_dados, 1024)
         #retira ".wav" do file
-        file = myFile[0].replace(".wav","")
-        fo = open(os.getcwd()+ '/musica/' + myFile[0], 'wb')
+        file = myFile.filename.replace(".wav","")
+        fo = open(os.getcwd()+ '/musica/' + myFile.filename, 'wb')
         while True:
-            data = myFile[1].read(8192)
+            data = myFile.file.read(8192)
             if not data:
                 break
             fo.write(data)
@@ -142,17 +163,59 @@ class Root(object):
         dataBase.commit()
         fo.close()
 
-    def criar_music(self, jason):
-        print("  RICKI RICKI RICKI RICKI RICKI RICKIhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-        wf = wave.open("musica/Piano.wav", 'rb')
-        wf1 = wave.open("musica/elephant.wav", 'rb')
-        data1 = wf.readframes(111)
-        data2 = wf1.readframes(111)
-        decodeddata1 = np.fromstring(data1, np.int16)
-        decodeddata2 = np.fromstring(data2, np.int16)
-        newdata = (decodeddata1 * 0.5 + decodeddata2* 0.5).astype(np.int16)
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        return (newdata.toString(), pyaudio.paContinue)
+    def criar_music(self, jason, frame_count):
+        
+        wf1 = jason['Excertos'][0]['music']
+        wf2 = jason['Excertos'][1]['music']
+        wf3 = jason['Excertos'][2]['music']
+        wf4 = jason['Excertos'][3]['music']
+        wf5 = jason['Excertos'][4]['music']
+        wf6 = jason['Excertos'][5]['music']
+        wf7 = jason['Excertos'][6]['music']
+        
+        wf1 = wave.open('musica/' + wf1, 'rb')
+        wf2 = wave.open('musica/' + wf2, 'rb')
+        wf3 = wave.open('musica/' + wf3, 'rb')
+        wf4 = wave.open('musica/' + wf4, 'rb')
+        wf5 = wave.open('musica/' + wf5, 'rb')
+        wf6 = wave.open('musica/' + wf6, 'rb')   
+        wf7 = wave.open('musica/' + wf7, 'rb')
+
+       
+        data1 = wf1.readframes(frame_count)
+        data2 = wf2.readframes(frame_count)
+        data3 = wf3.readframes(frame_count)
+        data4 = wf4.readframes(frame_count)
+        data5 = wf5.readframes(frame_count)
+        data6 = wf6.readframes(frame_count)
+        data7 = wf7.readframes(frame_count)
+
+        
+        decodeddata1 = numpy.fromstring(data1, numpy.int16)
+        decodeddata2 = numpy.fromstring(data2, numpy.int16)
+        decodeddata3 = numpy.fromstring(data3, numpy.int16)
+        decodeddata4 = numpy.fromstring(data4, numpy.int16)
+        decodeddata5 = numpy.fromstring(data5, numpy.int16)
+        decodeddata6 = numpy.fromstring(data6, numpy.int16)
+        decodeddata7 = numpy.fromstring(data7, numpy.int16)
+
+        for i in range(0 , 4 *44100):
+            decodeddata1 = numpy.append(decodeddata1,0)
+            decodeddata2 = numpy.append(decodeddata2,0)
+            decodeddata3 = numpy.append(decodeddata3,0)
+            decodeddata4 = numpy.append(decodeddata4,0)
+            decodeddata5 = numpy.append(decodeddata5,0)
+            decodeddata6 = numpy.append(decodeddata6,0)
+            decodeddata7 = numpy.append(decodeddata7,0)
+
+    
+        with wave.open('musica/FILE.wav', 'w') as wf:
+            newdata = (decodeddata1 + decodeddata2 + decodeddata3 +decodeddata4 +decodeddata5 +decodeddata6 +decodeddata7).astype(numpy.int16)
+            wf.writeframes(bytearray(newdata))
+            
+
+        return newdata.tostring()
+
 
 
 

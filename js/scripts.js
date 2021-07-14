@@ -108,7 +108,7 @@ function create_pauta(){
     var bpm = isDigit(bpm_text);
     //console.log("string =" + bpm_text);
     if(bpm){
-        bpm_text = parseFloat(bpm_text);
+        bpm = parseFloat(bpm_text);
     }
     else{
         alert("It must be number!");
