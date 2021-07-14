@@ -213,5 +213,56 @@ class Root(object):
                         newdata = newdata + decodeddata.astype(numpy.int16)
         return newdata.tostring()
 
+
+    #efetios
+    #echo
+    def ef_echo(self, data):
+        output=[]
+        rebounds=4
+        sounds=[]
+        for reb in range(0,rebounds):
+            sounds.append(-1)
+        for index in range(0,int(len(data)*3/2)):
+            som=0
+            n=0
+            for reb in range(0,len(sounds)):
+                if index==reb*int(len(data)/(2*(rebounds-1))):
+                    sounds[reb]=0
+                if (sounds[reb]>=0 and sounds[reb]<len(data)-1):
+                    n+=1
+                    som+=(1/(2*reb+1))*data[sounds[reb]]
+                    sounds[reb]+=1
+            if n==0:
+                n=1
+            output.append(int(som/n))
+            return output
+
+
+    #reverse
+    def ef_reverse(data):
+        output=[]
+        for i in range(len(data)-1,-1,-1):
+            output.append(data[i])
+        return output
+
+    #fade
+    def ef_fade(data,mode):
+        output=[]
+        minval=0.5
+        for index,value in enumerate(data):
+            if mode=="in":
+                output.append(value*linear(index,len(data),minval,1))
+            elif mode=="out":
+                output.append(value*linear(index,len(data),1,minval))
+            elif mode=="inout":
+                output.append(value*branch(index,len(data),minval,1))
+            elif mode=="outin":
+                output.append(value*branch(index,len(data),1,minval))
+        if output==[]:
+            return ef_volume(data,1)
+        return output
+
+
+
 if __name__ == "__main__":
     cherrypy.quickstart(Root(), "/", config)
