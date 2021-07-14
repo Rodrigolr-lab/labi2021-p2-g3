@@ -13,9 +13,7 @@ def main(argv):
         print("Excertos restarted")
         db.execute("DROP table excertos_table")
         db.execute("CREATE TABLE excertos_table(id INTEGER PRIMARY KEY AUTOINCREMENT, instrument TEXT, name_file TEXT)")
-        db.execute("INSERT INTO excertos_table(instrument, name_file) VALUES('Unknown1', 'unknown1.wav')")
-        db.execute("INSERT INTO excertos_table(instrument, name_file) VALUES('Unknown2', 'unknown2.wav')")
-        db.execute("INSERT INTO excertos_table(instrument, name_file) VALUES('Unknown3', 'unknown3.wav')")
+        db.execute("INSERT INTO excertos_table(instrument, name_file) VALUES('damnson', 'damnson.wav')")
     else:
         print("Esta tabela nao existe")
     db.commit()

@@ -8,6 +8,8 @@ import pyaudio
 from struct import pack
 from math import sin, pi
 
+cherrypy.config.update({'server.socket_port': 10003,})
+
 #diretorio do root
 baseDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -162,6 +164,7 @@ class Root(object):
         dataBase.execute("INSERT INTO music_table(music, artist, votes, people) VALUES(?, 'jony', ?, ? );", (file, 0, 0,))
         dataBase.commit()
         fo.close()
+
 
     def criar_music(self, jason, frame_count):
         

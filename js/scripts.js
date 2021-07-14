@@ -114,7 +114,6 @@ function create_pauta(){
         alert("It must be number!");
         return;
     }
-    //console.log("num =" + bpm_text);
     
     
     // criacao de json com informcaoes da pauta
