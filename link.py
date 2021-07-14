@@ -182,42 +182,47 @@ class Root(object):
         wf7 = wave.open('musica/' + wf7, 'rb')
 
        
-        data1 = wf1.readframes(frame_count)
-        data2 = wf2.readframes(frame_count)
-        data3 = wf3.readframes(frame_count)
-        data4 = wf4.readframes(frame_count)
-        data5 = wf5.readframes(frame_count)
-        data6 = wf6.readframes(frame_count)
-        data7 = wf7.readframes(frame_count)
+        with wave.open("out4.wav", "wb") as stream:
+            stream.setparams((1, 2, 22050, 0, "NONE", "not compressed"))
 
-        
-        decodeddata1 = numpy.fromstring(data1, numpy.int16)
-        decodeddata2 = numpy.fromstring(data2, numpy.int16)
-        decodeddata3 = numpy.fromstring(data3, numpy.int16)
-        decodeddata4 = numpy.fromstring(data4, numpy.int16)
-        decodeddata5 = numpy.fromstring(data5, numpy.int16)
-        decodeddata6 = numpy.fromstring(data6, numpy.int16)
-        decodeddata7 = numpy.fromstring(data7, numpy.int16)
+            data1 = wf1.readframes(frame_count)
+            data2 = wf2.readframes(frame_count)
+            data3 = wf3.readframes(frame_count)
+            data4 = wf4.readframes(frame_count)
+            data5 = wf5.readframes(frame_count)
+            data6 = wf6.readframes(frame_count)
+            data7 = wf7.readframes(frame_count)
 
-        for i in range(0 , 4 *44100):
-            decodeddata1 = numpy.append(decodeddata1,0)
-            decodeddata2 = numpy.append(decodeddata2,0)
-            decodeddata3 = numpy.append(decodeddata3,0)
-            decodeddata4 = numpy.append(decodeddata4,0)
-            decodeddata5 = numpy.append(decodeddata5,0)
-            decodeddata6 = numpy.append(decodeddata6,0)
-            decodeddata7 = numpy.append(decodeddata7,0)
 
-    
-        with wave.open('musica/FILE.wav', 'w') as wf:
-            newdata = (decodeddata1 + decodeddata2 + decodeddata3 +decodeddata4 +decodeddata5 +decodeddata6 +decodeddata7).astype(numpy.int16)
-            wf.writeframes(bytearray(newdata))
-            
+            decodeddata1 = numpy.fromstring(data1, numpy.int16)
+            decodeddata2 = numpy.fromstring(data2, numpy.int16)
+            decodeddata3 = numpy.fromstring(data3, numpy.int16)
+            decodeddata4 = numpy.fromstring(data4, numpy.int16)
+            decodeddata5 = numpy.fromstring(data5, numpy.int16)
+            decodeddata6 = numpy.fromstring(data6, numpy.int16)
+            decodeddata7 = numpy.fromstring(data7, numpy.int16)
 
+            while len(decodeddata1) > 0:
+                newdata = (decodeddata1 + decodeddata2 + decodeddata3 +decodeddata4 +decodeddata5 +decodeddata6 +decodeddata7).astype(numpy.int16)
+                stream.writeframes(newdata )
+
+                data1 = wf1.readframes(frame_count)
+                data2 = wf2.readframes(frame_count)
+                data3 = wf3.readframes(frame_count)
+                data4 = wf4.readframes(frame_count)
+                data5 = wf5.readframes(frame_count)
+                data6 = wf6.readframes(frame_count)
+                data7 = wf7.readframes(frame_count)
+
+
+                decodeddata1 = numpy.fromstring(data1, numpy.int16)
+                decodeddata2 = numpy.fromstring(data2, numpy.int16)
+                decodeddata3 = numpy.fromstring(data3, numpy.int16)
+                decodeddata4 = numpy.fromstring(data4, numpy.int16)
+                decodeddata5 = numpy.fromstring(data5, numpy.int16)
+                decodeddata6 = numpy.fromstring(data6, numpy.int16)
+                decodeddata7 = numpy.fromstring(data7, numpy.int16)
         return newdata.tostring()
-
-
-
 
 if __name__ == "__main__":
     cherrypy.quickstart(Root(), "/", config)
