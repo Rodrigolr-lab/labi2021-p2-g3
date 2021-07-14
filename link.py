@@ -2,7 +2,9 @@ import cherrypy
 import os.path
 import sqlite3
 import json
-
+import wave
+import numpy as np
+import pyaudio
 #diretorio do root
 baseDir = os.path.dirname(os.path.abspath(__file__))
 
@@ -122,53 +124,35 @@ class Root(object):
             dataBase.close()
         return result
 
-    #receives file
-    @cherrypy.expose
-    def upload(self, myFile):
-        #retira ".wav" do file
-        file = myFile.filename.replace(".wav","")
-        fo = open(os.getcwd()+ '/musica/' + myFile.filename, 'wb')
-        while True:
-            data = myFile.file.read(8192)
-            if not data:
-                break
-            fo.write(data)
-        dataBase = sqlite3.connect('database.db')
-        #adciona nova row da tabela
-        dataBase.execute("INSERT INTO excertos_table(instrument, name_file) VALUES(?, ?);", (file, myFile.filename,))
-        dataBase.commit()
-        fo.close()
-
+    #creates and adds file to database
     @cherrypy.expose
     def upload_pauta(self, json_dados):
-        print("-------------------------------------------------------------------------------------------------------------------------------------------")
-        print(json_dados)
-        file = self.criar_music(json_dados)
+        myFile = self.criar_music(json_dados)
         #retira ".wav" do file
-        file = json_dados.filename.replace(".wav","")
-        fo = open(os.getcwd()+ '/musica/samples/' + file.filename, 'wb')
+        file = myFile[0].replace(".wav","")
+        fo = open(os.getcwd()+ '/musica/' + myFile[0], 'wb')
         while True:
-            data = file.file.read(8192)
+            data = myFile[1].read(8192)
             if not data:
                 break
             fo.write(data)
         dataBase = sqlite3.connect('database.db')
-        #adciona nova row da tabela
-        dataBase.execute("INSERT INTO music_table(music, artist, votes, people) VALUES('manel', 'jony', ?, ? );", (0, 0,))
+        #adciona nova row da tabela music
+        dataBase.execute("INSERT INTO music_table(music, artist, votes, people) VALUES(?, 'jony', ?, ? );", (file, 0, 0,))
         dataBase.commit()
-        
         fo.close()
 
     def criar_music(self, jason):
         print("  RICKI RICKI RICKI RICKI RICKI RICKIhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-        wf = wave.open("YYY.wav", 'rb')
-        wf1 = wave.open("XXX.wav", 'rb')
-        data1 = wf.readframes(frame_count)
-        data2 = wf1.readframes(frame_count)
-        decodeddata1 = numpy.fromstring(data1, numpy.int16)
-        decodeddata2 = numpy.fromstring(data2, numpy.int16)
-        newdata = (decodeddata1 * 0.5 + decodeddata2* 0.5).astype(numpy.int16)
-        return (result.tostring(), pyaudio.paContinue)
+        wf = wave.open("musica/Piano.wav", 'rb')
+        wf1 = wave.open("musica/elephant.wav", 'rb')
+        data1 = wf.readframes(111)
+        data2 = wf1.readframes(111)
+        decodeddata1 = np.fromstring(data1, np.int16)
+        decodeddata2 = np.fromstring(data2, np.int16)
+        newdata = (decodeddata1 * 0.5 + decodeddata2* 0.5).astype(np.int16)
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        return (newdata.toString(), pyaudio.paContinue)
 
 
 
