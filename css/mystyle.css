@@ -1,13 +1,3 @@
-.Mixing{
-    position: relative;
-    margin-top: 50px;
-    color: #ffffff;
-    background-color:#212529;;
-    font-size: 22px;
-    border-radius: 20%;
-    border-width: 0;
-}
-
 .title-prymary {
     padding-top: 0.3125rem;
     padding-bottom: 0.3125rem;
@@ -16,6 +6,21 @@
     text-decoration: overline;
   }
 
+input[type=file]::file-selector-button {
+    color: #fff;
+    border: 2px solid #6c757d;
+    padding: .2em .4em;
+    border-radius: .2em;
+    background-color: #6c757d;
+    transition: 1s;
+    cursor:pointer;
+  }
+  
+input[type=file]::file-selector-button:hover {
+    color: #fff;
+    background-color: #5c636a;
+    border: 2px solid #565e64;
+}
 /*TableMixer*/
 .Tmix {
     display: block;

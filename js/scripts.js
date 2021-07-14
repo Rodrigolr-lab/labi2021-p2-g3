@@ -53,57 +53,181 @@ window.addEventListener('DOMContentLoaded', event => {
 
 });
 
-//my JS
+//myJS
 
-function path(file_name){
-    const path = require(file_name);
-    return path;
+//verifys if it is num
+function isDigit(Elemento){
+    var dig = true;
+    for(var i =0; i< Elemento.length ; i++){
+        var c = Elemento[i].substr(0,Elemento.length+1);
+        if (!(c >= '0' && c <= '9')) {
+            dig= false;
+            return dig;
+        }
+    }
+    return dig;
 }
 
 
-function makerow(){//creates a new Row
-    //val intrument
-    var inst=document.getElementById("Instrument").value;
-    var path_file = document.getElementById("file").value;//.files[0].name
-    console.log(path_file);
-    var table=document.getElementsByTagName('table')[0];
-    //adiciona uma nova row 
-    var newRow = table.insertRow(1);
-    //adiciona uma nova cellss
-    var cell1 = newRow.insertCell(0);
-    var cell2 = newRow.insertCell(1);
-    //cria uma tag input
-    var btn = document.createElement("input");
-    btn.value = "Play";
-    btn.type = "submit";
-    btn.className="btn btn-secondary btn-lg text-uppercase";
-    btn.onclick=function(){
-        console.log(path_file);
-        path_file = path_file.replace("\\", "/");
-        console.log(path_file);
-        play(path_file);};
-    //conexao dos tags
-    cell1.innerHTML= inst;
-    cell2.appendChild(btn);
+//seleciona a opcao selecionada em select
+function missao_impossivel(elemento) {
+    var elementoSeleccionado = elemento.options[elemento.selectedIndex];
+    op = elementoSeleccionado.value;
 }
+
+
+//cria a pauta de som
+function create_pauta(){
+    //tabela de sons on
+    var row = [];
+    var col = [];
+    for (var j = 1; j < 8 ; j++){
+        var col = [];
+        for(var i = 1; i < 18 ; i++){
+            var on = document.getElementById("check_"+j+"-"+i);
+            if(on.checked){
+                col[i-1] = 1;
+            }
+            else{
+                col[i-1] = 0;
+            }
+        }
+        row[j-1] = col;
+    }
+    //lista de sons inseridos na opcao
+    var list =[];
+    for (var j = 1; j < 8 ; j++){
+        var music  = document.getElementById("op-"+j);
+        missao_impossivel(music);
+        list[j-1] =  op;
+    }
+
+
+    //gets value and verifys if it is num
+    var bpm_text = document.getElementById("bpm-value").value;
+    var bpm = isDigit(bpm_text);
+    //console.log("string =" + bpm_text);
+    if(bpm){
+        bpm_text = parseFloat(bpm_text);
+    }
+    else{
+        alert("It must be number!");
+        return;
+    }
+    //console.log("num =" + bpm_text);
+    
+    
+    // criacao de json com informcaoes da pauta
+    pauta = {
+            "bpm": bpm,
+            Excertos: [{
+                            music:  list[0],
+                            play: row[0],
+                        }, 
+                        {
+                            music: list[1],
+                            play: row[1],
+                        },
+                        {
+                            music: list[2],
+                            play: row[2],
+                        },
+                        {
+                            music: list[3],
+                            play: row[3],
+                        },
+                        {
+                            music: list[4],
+                            play: row[4],
+                        },
+                        {
+                            music: list[5],
+                            play: row[5],
+                        },
+                        {
+                            music: list[6],
+                            play: row[6],
+                        }
+                    ]
+            }
+
+            //funcao para enviar json
+            sendpauta(pauta);
+            
+        
+}
+
+//send json pauta
+function sendpauta(pauta) {
+    var enviar = new FormData();
+    // Creating a XHR object
+    let xhr = new XMLHttpRequest();
+    let url = "upload_pauta";
+
+    // open a connection
+    xhr.open("POST", url, true);
+
+    // Converting JSON data to string
+    var data = JSON.stringify(pauta);
+    enviar.append("json_dados", data);
+
+
+    // Sending data with the request
+    xhr.send(enviar);
+}
+
+//receives file
+function onChange(event) {
+    var file = event.target.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        // The file's text will be printed here
+        console.log(e.target.result);
+    };
+    reader.readAsText(file);
+    sendFile(file);
+}
+
+
+//sends file
+function sendFile(file) {
+    var data = new FormData();
+    //adds data to variabel
+    data.append("myFile", file);
+    var xhr = new XMLHttpRequest();
+    //excuta funcao
+    xhr.open("POST", "upload");
+    xhr.upload.addEventListener("progress", updateProgress, false);
+    //sends the data
+    xhr.send(data);
+}
+
+
+//alertar que o update foi bem sucessido
+function updateProgress(evt){
+    if(evt.loaded == evt.total) alert("Well Sucessed!");
+}
+
+
 //produz som ao clicar em play botao
 function play(song){
-    console.log(song);
     var audio = new Audio(song);
     audio.play();
 }
 
 
 
-//--------------------------------1PAG------------------------------
-//chamar DATABASE
+
+
+
+//--------------------------------1PAG-API------------------------------
 function chamar_api_music() {
     var request = new XMLHttpRequest();
     //pede request metodo get
-    request.open("GET", "list?type=music_table", true);
+    request.open("GET", "sql?type=music_table", true);
     //verifica mudancas de estado
     request.onreadystatechange = function () {
-        // In local files, status is 0 upon success in Mozilla Firefox
+    // In local files, status is 0 upon success in Mozilla Firefox
     //verifica estado done
     if(request.readyState === XMLHttpRequest.DONE) {
         var status = request.status;
@@ -115,12 +239,66 @@ function chamar_api_music() {
           make_music(resposta);
         }
         else{
-            console.log("ERROR");
+            console.log("ERROR1");
         }
       }
     }
     request.send(null);
-  }
+}
+
+
+//--------------------------------2PAG-API------------------------------
+function chamar_api_excertos() {
+    var request = new XMLHttpRequest();
+    //pede request metodo get
+    request.open("GET", "sql?type=excertos_table", true);
+    //verifica mudancas de estado
+    request.onreadystatechange = function () {
+    // In local files, status is 0 upon success in Mozilla Firefox
+    //verifica estado done
+    if(request.readyState === XMLHttpRequest.DONE) {
+        var status = request.status;
+        //verifica estado done
+        if (status === 0 || (status >= 200 && status < 400)) {
+          // The request has been completed successfully
+          //jsoon para js
+          resposta = JSON.parse(request.responseText);
+          make_excertos(resposta);
+        }
+        else{
+            console.log("ERROR2");
+        }
+      }
+    }
+    request.send(null);
+}
+
+
+//--------------------------------3PAG-API------------------------------
+function chamar_api_mix() {
+    var request = new XMLHttpRequest();
+    //pede request metodo get
+    request.open("GET", "sql?type=excertos_table", true);
+    //verifica mudancas de estado
+    request.onreadystatechange = function () {
+    // In local files, status is 0 upon success in Mozilla Firefox
+    //verifica estado done
+    if(request.readyState === XMLHttpRequest.DONE) {
+        var status = request.status;
+        //verifica estado done
+        if (status === 0 || (status >= 200 && status < 400)) {
+          // The request has been completed successfully
+          //jsoon para js
+          resposta = JSON.parse(request.responseText);
+          make_mix(resposta);
+        }
+        else{
+            console.log("ERROR3");
+        }
+      }
+    }
+    request.send(null);
+}
 
 
 //tabela de music
@@ -133,6 +311,7 @@ function make_music(json_dados) {
                 <th></th>
                 <th></th>
             </tr>`;
+
     for (var i = 0; i < json_dados.length; i++) {
       dados = json_dados[i];
       html = html + `<tr>
@@ -148,10 +327,12 @@ function make_music(json_dados) {
                        </td>
                     </tr>`;
     }
+
     document.getElementById("table_music").innerHTML = html;
   }
 
-//votar para cima ou para baixo
+
+//votar para cima ou para baixo em music
 function votos (Elemento, cho){
     var request = new XMLHttpRequest();
     cho = parseFloat(cho);
@@ -166,50 +347,45 @@ function votos (Elemento, cho){
 }
 
 
-chamar_api_music()
-//--------------------------------2PAG------------------------------
-//chamar DATABASE
-function chamar_api_excertos() {
-    var request = new XMLHttpRequest();
-    //pede request metodo get
-    request.open("GET", "list?type=music_excertos", true);
-    //verifica mudancas de estado
-    request.onreadystatechange = function () {
-        // In local files, status is 0 upon success in Mozilla Firefox
-    //verifica estado done
-    if(request.readyState === XMLHttpRequest.DONE) {
-        var status = request.status;
-        //verifica estado done
-        if (status === 0 || (status >= 200 && status < 400)) {
-          // The request has been completed successfully
-          //jsoon para js
-          resposta = JSON.parse(request.responseText);
-          make_excertos(resposta);
-        }
-        else{
-            console.log("ERROR");
-        }
-      }
-    }
-    request.send(null);
-  }
-
-
-//tabela de music
-//criacao da tabela musicas 
+//tabela de excertos
+//criacao da tabela excertos
 function make_excertos(json_dados) {
     html = `<tr>
-                <th>instrument</th>
+                <th>Name</th>
                 <th></th>
             </tr>`;
+
     for (var i = 0; i < json_dados.length; i++) {
       dados = json_dados[i];
       html = html + `<tr>
                         <td>`+dados.instrument +`</td>
-                        <td><input type="submit" value="Play" onclick="play('`+dados.name_file+`')" class="btn btn-secondary btn-lg text-uppercase"/></td>
+                        <td><input type="submit" value="Play" onclick="play('musica/`+dados.name_file+`')" class="btn btn-secondary btn-lg text-uppercase"/></td>
                     </tr>`;
     }
+
     document.getElementById("table_excertos").innerHTML = html;
   }
 
+
+//tabela de mix
+//criacao das options do mix 
+function make_mix(json_dados) {
+    html = `<option value="" disabled selected>NO SOUND</option>`;
+
+    for (var i = 0; i < json_dados.length; i++) {
+        dados = json_dados[i];
+        html = html + `<option value="`+dados.name_file+`">`+dados.name_file+`</option>`;
+    }
+
+    var mix = document.getElementsByClassName("options");
+    for (var i = 0; i < mix.length; i++) {
+        mix[i].innerHTML = html;
+    }
+}
+
+
+
+//Executadas apos iniciar pags HTML
 chamar_api_excertos()
+chamar_api_music()
+chamar_api_mix()
